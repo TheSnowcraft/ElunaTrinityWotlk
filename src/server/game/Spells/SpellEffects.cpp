@@ -63,6 +63,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "Transmogrification.h"
 
 SpellEffectHandlerFn SpellEffectHandlers[TOTAL_SPELL_EFFECTS] =
 {
@@ -2605,6 +2606,8 @@ void Spell::EffectEnchantItemPerm()
 
         item_owner->RemoveTradeableItem(itemTarget);
         itemTarget->ClearSoulboundTradeable(item_owner);
+
+        Transmogrification::instance().AddToCollection(item_owner, itemTarget);
     }
 }
 

@@ -28,7 +28,7 @@
 #define FLIGHT_TRAVEL_UPDATE 100
 #define TIMEDIFF_NEXT_WP 250
 #define SKIP_SPLINE_POINT_DISTANCE_SQ (40.f * 40.f)
-#define PLAYER_FLIGHT_SPEED 32.0f
+#define PLAYER_FLIGHT_SPEED 38.0f
 
 FlightPathMovementGenerator::FlightPathMovementGenerator(uint32 startNode)
 {

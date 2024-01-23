@@ -4055,13 +4055,6 @@ void InstanceMap::CreateInstanceData(bool load)
     if (!i_data)
         return;
 
-    // use mangos behavior if we are dealing with Eluna AI
-    // initialize should then be called only if load is false
-#ifndef TRINITY
-    if (!isElunaAI || !load)
-        i_data->Initialize();
-#endif
-
     if (load)
     {
         /// @todo make a global storage for this
@@ -4183,7 +4176,7 @@ void InstanceMap::PermBindAllPlayers()
             WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
             data << uint32(0);
             player->SendDirectMessage(&data);
-            player->GetSession()->SendCalendarRaidLockout(save, true);
+            player->GetSession()->SendCalendarRaidLockoutAdded(save);
 
             // if group leader is in instance, group also gets bound
             if (Group* group = player->GetGroup())

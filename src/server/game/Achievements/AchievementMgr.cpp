@@ -370,7 +370,7 @@ bool AchievementCriteriaData::Meets(uint32 criteria_id, Player const* source, Wo
             Unit const* unitTarget = target->ToUnit();
             if (!unitTarget)
                 return false;
-            return unitTarget->GetGender() == gender.gender;
+            return unitTarget->GetGender() == Gender(gender.gender);
         }
         case ACHIEVEMENT_CRITERIA_DATA_TYPE_SCRIPT:
         {
@@ -1534,7 +1534,8 @@ void AchievementMgr::CompletedAchievement(AchievementEntry const* achievement)
     UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_ACHIEVEMENT_POINTS, achievement->Points);
 
 #ifdef ELUNA
-    sEluna->OnAchievementComplete(GetPlayer(), achievement->ID);
+    if (Eluna* e = GetPlayer()->GetEluna())
+        e->OnAchievementComplete(GetPlayer(), achievement->ID);
 #endif
 
     // reward items and titles if any

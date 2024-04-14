@@ -65,14 +65,12 @@ void WorldSession::SendTradeStatus(TradeStatusInfo const& info)
 
 void WorldSession::HandleIgnoreTradeOpcode(WorldPacket& /*recvPacket*/)
 {
-    TC_LOG_DEBUG("network", "WORLD: Ignore Trade {}", _player->GetGUID().ToString());
-    // recvPacket.print_storage();
+    _player->TradeCancel(true, TRADE_STATUS_IGNORE_YOU);
 }
 
 void WorldSession::HandleBusyTradeOpcode(WorldPacket& /*recvPacket*/)
 {
-    TC_LOG_DEBUG("network", "WORLD: Busy Trade {}", _player->GetGUID().ToString());
-    // recvPacket.print_storage();
+    _player->TradeCancel(true, TRADE_STATUS_BUSY);
 }
 
 void WorldSession::SendUpdateTrade(bool trader_data /*= true*/)
@@ -356,13 +354,16 @@ void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
     }
 
 #ifdef ELUNA
-    if (!sEluna->OnTradeAccept(_player, trader))
+    if (Eluna* e = _player->GetEluna())
     {
-        info.Status = TRADE_STATUS_CLOSE_WINDOW;
-        info.Result = EQUIP_ERR_CANT_DO_RIGHT_NOW;
-        SendTradeStatus(info);
-        my_trade->SetAccepted(false, true);
-        return;
+        if (!e->OnTradeAccept(_player, trader))
+        {
+            info.Status = TRADE_STATUS_CLOSE_WINDOW;
+            info.Result = EQUIP_ERR_CANT_DO_RIGHT_NOW;
+            SendTradeStatus(info);
+            my_trade->SetAccepted(false, true);
+            return;
+        }
     }
 #endif
 
@@ -584,13 +585,13 @@ void WorldSession::HandleBeginTradeOpcode(WorldPacket& /*recvPacket*/)
     SendTradeStatus(info);
 }
 
-void WorldSession::SendCancelTrade()
+void WorldSession::SendCancelTrade(TradeStatus status)
 {
     if (PlayerRecentlyLoggedOut() || PlayerLogout())
         return;
 
     TradeStatusInfo info;
-    info.Status = TRADE_STATUS_TRADE_CANCELED;
+    info.Status = status;
     SendTradeStatus(info);
 }
 
@@ -690,13 +691,6 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (pOther->GetSocial()->HasIgnore(GetPlayer()->GetGUID()))
-    {
-        info.Status = TRADE_STATUS_IGNORE_YOU;
-        SendTradeStatus(info);
-        return;
-    }
-
     if (pOther->GetTeam() != _player->GetTeam() &&
         (!sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_TRADE) &&
          !GetPlayer()->GetSession()->HasPermission(rbac::RBAC_PERM_ALLOW_TWO_SIDE_TRADE)))
@@ -714,11 +708,14 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvPacket)
     }
 
 #ifdef ELUNA
-    if (!sEluna->OnTradeInit(GetPlayer(), pOther))
+    if (Eluna* e = GetPlayer()->GetEluna())
     {
-        info.Status = TRADE_STATUS_BUSY;
-        SendTradeStatus(info);
-        return;
+        if (!e->OnTradeInit(GetPlayer(), pOther))
+        {
+            info.Status = TRADE_STATUS_BUSY;
+            SendTradeStatus(info);
+            return;
+        }
     }
 #endif
 

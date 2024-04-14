@@ -25,9 +25,14 @@
 #include "MMapFactory.h"
 #include "ObjectMgr.h"
 #include "Player.h"
+#include "ScriptMgr.h"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "World.h"
+
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 
 MapInstanced::MapInstanced(uint32 id, time_t expiry) : Map(id, expiry, 0, DUNGEON_DIFFICULTY_NORMAL)
 {
@@ -95,11 +100,11 @@ void MapInstanced::UnloadAll()
 {
     // Unload instanced maps
     for (InstancedMaps::iterator i = m_InstancedMaps.begin(); i != m_InstancedMaps.end(); ++i)
+    {
         i->second->UnloadAll();
 
-    // Delete the maps only after everything is unloaded to prevent crashes
-    for (InstancedMaps::iterator i = m_InstancedMaps.begin(); i != m_InstancedMaps.end(); ++i)
-        delete i->second;
+        sScriptMgr->OnDestroyMap(i->second.get());
+    }
 
     m_InstancedMaps.clear();
 
@@ -237,7 +242,11 @@ InstanceMap* MapInstanced::CreateInstance(uint32 InstanceId, InstanceSave* save,
     if (sWorld->getBoolConfig(CONFIG_INSTANCEMAP_LOAD_GRIDS))
         map->LoadAllCells();
 
-    m_InstancedMaps[InstanceId] = map;
+    Trinity::unique_trackable_ptr<Map>& ptr = m_InstancedMaps[InstanceId];
+    ptr.reset(map);
+    map->SetWeakPtr(ptr);
+
+    sScriptMgr->OnCreateMap(map);
     return map;
 }
 
@@ -262,7 +271,12 @@ BattlegroundMap* MapInstanced::CreateBattleground(uint32 InstanceId, Battlegroun
     map->SetBG(bg);
     bg->SetBgMap(map);
 
-    m_InstancedMaps[InstanceId] = map;
+    Trinity::unique_trackable_ptr<Map>& ptr = m_InstancedMaps[InstanceId];
+    ptr.reset(map);
+    map->SetWeakPtr(ptr);
+
+    sScriptMgr->OnCreateMap(map);
+
     return map;
 }
 
@@ -287,12 +301,13 @@ bool MapInstanced::DestroyInstance(InstancedMaps::iterator &itr)
         Map::UnloadAll();
     }
 
+    sScriptMgr->OnDestroyMap(itr->second.get());
+
     // Free up the instance id and allow it to be reused for bgs and arenas (other instances are handled in the InstanceSaveMgr)
     if (itr->second->IsBattlegroundOrArena())
         sMapMgr->FreeInstanceId(itr->second->GetInstanceId());
 
     // erase map
-    delete itr->second;
     m_InstancedMaps.erase(itr++);
 
     return true;

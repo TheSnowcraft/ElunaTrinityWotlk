@@ -245,8 +245,9 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& recvData)
     }
 
 #ifdef ELUNA
-    if (!sEluna->OnMemberAccept(group, GetPlayer()))
-        return;
+    if (Eluna* e = GetPlayer()->GetEluna())
+        if (!e->OnMemberAccept(group, GetPlayer()))
+            return;
 #endif
 
     Player* leader = ObjectAccessor::FindPlayer(group->GetLeaderGUID());
@@ -417,10 +418,7 @@ void WorldSession::HandleGroupDisbandOpcode(WorldPacket & /*recvData*/)
         return;
 
     if (_player->InBattleground())
-    {
-        SendPartyResult(PARTY_OP_INVITE, "", ERR_INVITE_RESTRICTED);
         return;
-    }
 
     /** error handling **/
     /********************/

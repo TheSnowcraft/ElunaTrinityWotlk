@@ -32,14 +32,21 @@
 #include "SpawnData.h"
 #include "Timer.h"
 #include "Transaction.h"
+#include "UniqueTrackablePtr.h"
 #include <bitset>
 #include <list>
 #include <memory>
 #include <mutex>
+#ifdef ELUNA
+#include "LuaValue.h"
+#endif
 
 class Battleground;
 class BattlegroundMap;
 class CreatureGroup;
+#ifdef ELUNA
+class Eluna;
+#endif
 class GameObjectModel;
 class Group;
 class InstanceMap;
@@ -429,6 +436,9 @@ class TC_GAME_API Map : public GridRefManager<NGridType>
         uint32 GetInstanceId() const { return i_InstanceId; }
         uint8 GetSpawnMode() const { return (i_spawnMode); }
 
+        Trinity::unique_weak_ptr<Map> GetWeakPtr() const { return m_weakRef; }
+        void SetWeakPtr(Trinity::unique_weak_ptr<Map> weakRef) { m_weakRef = std::move(weakRef); }
+
         enum EnterState
         {
             CAN_ENTER = 0,
@@ -710,6 +720,7 @@ class TC_GAME_API Map : public GridRefManager<NGridType>
         MapEntry const* i_mapEntry;
         uint8 i_spawnMode;
         uint32 i_InstanceId;
+        Trinity::unique_weak_ptr<Map> m_weakRef;
         uint32 m_unloadTimer;
         float m_VisibleDistance;
         DynamicMapTree _dynamicTree;
@@ -815,7 +826,12 @@ class TC_GAME_API Map : public GridRefManager<NGridType>
 
         typedef std::function<void(Map*)> FarSpellCallback;
         void AddFarSpellCallback(FarSpellCallback&& callback);
+        bool IsParentMap() const { return GetParent() == this; }
+#ifdef ELUNA
+        Eluna* GetEluna() const;
 
+        LuaVal lua_data = LuaVal({});
+#endif
     private:
         // Type specific code for add/remove to/from grid
         template<class T>
@@ -895,6 +911,9 @@ class TC_GAME_API Map : public GridRefManager<NGridType>
         std::unordered_set<Object*> _updateObjects;
 
         MPSCQueue<FarSpellCallback> _farSpellCallbacks;
+#ifdef ELUNA
+        Eluna* eluna;
+#endif
 };
 
 enum InstanceResetMethod

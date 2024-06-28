@@ -2001,6 +2001,7 @@ void Player::RegenerateAll()
     m_foodEmoteTimerCount += m_regenTimer;
 
     Regenerate(POWER_ENERGY);
+    Regenerate(POWER_FOCUS);
     Regenerate(POWER_MANA);
     Regenerate(POWER_RAGE);
     Regenerate(POWER_RUNIC_POWER);
@@ -2172,6 +2173,9 @@ void Player::ResetAllPowers()
             break;
         case POWER_ENERGY:
             SetFullPower(POWER_ENERGY);
+            break;
+            case POWER_FOCUS:
+            SetFullPower(POWER_FOCUS);
             break;
         case POWER_RUNIC_POWER:
             SetPower(POWER_RUNIC_POWER, 0);
@@ -4517,6 +4521,7 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
         SetPower(POWER_MANA, uint32(GetMaxPower(POWER_MANA)*restore_percent));
         SetPower(POWER_RAGE, 0);
         SetPower(POWER_ENERGY, uint32(GetMaxPower(POWER_ENERGY)*restore_percent));
+        SetPower(POWER_FOCUS, uint32(GetMaxPower(POWER_FOCUS) * restore_percent));
     }
 
     // trigger update zone for alive state zone updates
@@ -24171,6 +24176,7 @@ void Player::ResurrectUsingRequestDataImpl()
 
     SetPower(POWER_RAGE, 0);
     SetFullPower(POWER_ENERGY);
+    SetFullPower(POWER_FOCUS);
 
     SpawnCorpseBones();
 }

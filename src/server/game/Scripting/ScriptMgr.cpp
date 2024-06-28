@@ -490,7 +490,7 @@ class CreatureGameObjectScriptRegistrySwapHooks
             }
         };
 
-        AIFunctionMapWorker<typename std::decay<decltype(evaluator)>::type> worker(std::move(evaluator));
+        AIFunctionMapWorker<std::decay_t<decltype(evaluator)>> worker(std::move(evaluator));
         TypeContainerVisitor<decltype(worker), MapStoredObjectTypesContainer> containerVisitor(worker);
 
         containerVisitor.Visit(map->GetObjectsStore());
@@ -1458,15 +1458,7 @@ void ScriptMgr::OnDestroyMap(Map* map)
 
 #ifdef ELUNA
     if (Eluna* e = map->GetEluna())
-    {
         e->OnDestroy(map);
-
-        if (map->IsBattleground())
-        {
-            Battleground* bg = map->ToBattlegroundMap()->GetBG();
-            e->OnBGDestroy(bg, bg->GetTypeID(), bg->GetInstanceID());
-        }
-    }
 #endif
 
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsWorldMap);
@@ -1717,10 +1709,6 @@ CreatureAI* ScriptMgr::GetCreatureAI(Creature* creature)
 GameObjectAI* ScriptMgr::GetGameObjectAI(GameObject* gameobject)
 {
     ASSERT(gameobject);
-#ifdef ELUNA
-    if (Eluna* e = gameobject->GetEluna())
-        e->OnSpawn(gameobject);
-#endif
 
     GET_SCRIPT_RET(GameObjectScript, gameobject->GetScriptId(), tmpscript, nullptr);
     return tmpscript->GetAI(gameobject);

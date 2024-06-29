@@ -230,6 +230,7 @@ bool Player::UpdateAllStats()
     UpdatePowerRegen(POWER_MANA);
     UpdatePowerRegen(POWER_RAGE);
     UpdatePowerRegen(POWER_ENERGY);
+    UpdatePowerRegen(POWER_FOCUS);
     UpdatePowerRegen(POWER_RUNIC_POWER);
     UpdateExpertise(BASE_ATTACK);
     UpdateExpertise(OFF_ATTACK);
@@ -944,6 +945,10 @@ void Player::UpdatePowerRegen(Powers power)
     {
         SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER + AsUnderlyingType(power), power == POWER_ENERGY ? -10.f : 0.f);
         SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + AsUnderlyingType(power), power == POWER_ENERGY ? -10.f : 0.f);
+
+        SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER + AsUnderlyingType(power), power == POWER_FOCUS ? -5.f : 0.f);
+        SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + AsUnderlyingType(power), power == POWER_FOCUS ? -5.f : 0.f);
+
         return;
     }
 
@@ -1009,6 +1014,9 @@ void Player::UpdatePowerRegen(Powers power)
     if (power == POWER_ENERGY)
         result_regen_interrupted = result_regen;
 
+    if (power == POWER_FOCUS)
+        result_regen_interrupted = result_regen;
+
     SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER + AsUnderlyingType(power), result_regen);
     SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + AsUnderlyingType(power), result_regen_interrupted);
 }
@@ -1025,6 +1033,7 @@ float Player::GetPowerRegen(Powers power) const
     float regen = GetFloatValue((interrupted ? UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER : UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER) + AsUnderlyingType(power));
     if (power != POWER_MANA)
         regen += (power == POWER_ENERGY || !interrupted) ? powerRegenInfo[AsUnderlyingType(power)].first : 0.f;
+        regen += (power == POWER_FOCUS || !interrupted) ? powerRegenInfo[AsUnderlyingType(power)].first : 0.f;
 
     return regen;
 }

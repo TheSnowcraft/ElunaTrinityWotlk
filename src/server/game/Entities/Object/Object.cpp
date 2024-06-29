@@ -46,6 +46,7 @@
 #ifdef ELUNA
 #include "LuaEngine.h"
 #include "ElunaConfig.h"
+#include "ElunaEventMgr.h"
 #endif
 #include "Transport.h"
 #include "Unit.h"
@@ -1058,6 +1059,14 @@ void WorldObject::CleanupsBeforeDelete(bool /*finalCleanup*/)
 
     if (Transport* transport = GetTransport())
         transport->RemovePassenger(this);
+}
+
+void WorldObject::Update([[maybe_unused]] uint32 time_diff)
+{
+#ifdef ELUNA
+    if(elunaEvents) // can be null on maps without eluna
+        elunaEvents->Update(time_diff);
+#endif
 }
 
 void WorldObject::_Create(ObjectGuid::LowType guidlow, HighGuid guidhigh, uint32 phaseMask)

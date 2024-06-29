@@ -145,12 +145,9 @@ struct boss_ionar : public BossAI
 
         Position pos = me->GetPosition();
 
-        for (SummonList::const_iterator itr = summons.begin(); itr != summons.end();)
+        for (ObjectGuid guid : summons)
         {
-            Creature* pSpark = ObjectAccessor::GetCreature(*me, *itr);
-            ++itr;
-
-            if (pSpark)
+            if (Creature* pSpark = ObjectAccessor::GetCreature(*me, guid))
             {
                 if (pSpark->IsAlive())
                 {

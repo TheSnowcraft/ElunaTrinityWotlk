@@ -232,11 +232,7 @@ void GameObject::AddToWorld()
 
 #ifdef ELUNA
         if (Eluna* e = GetEluna())
-        {
-            // one of these should really be deprecated, they serve the exact same purpose
             e->OnAddToWorld(this);
-            e->OnSpawn(this);
-        }
 #endif
     }
 }
@@ -469,12 +465,7 @@ void GameObject::Update(uint32 diff)
 {
 #ifdef ELUNA
     if (Eluna* e = GetEluna())
-    {
         e->UpdateAI(this, diff);
-
-        if (elunaEvents) // can be null on maps without eluna
-            elunaEvents->Update(diff);
-    }
 #endif
     m_Events.Update(diff);
 

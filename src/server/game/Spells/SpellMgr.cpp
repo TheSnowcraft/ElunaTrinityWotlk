@@ -177,7 +177,7 @@ uint32 SpellMgr::GetSpellIdForDifficulty(uint32 spellId, WorldObject const* cast
     if (!GetSpellInfo(spellId))
         return spellId;
 
-    if (!caster || !caster->GetMap() || (!caster->GetMap()->IsDungeon() && !caster->GetMap()->IsBattleground()))
+    if (!caster || !caster->GetMap() || !caster->GetMap()->IsDungeon())
         return spellId;
 
     uint32 mode = uint32(caster->GetMap()->GetSpawnMode());

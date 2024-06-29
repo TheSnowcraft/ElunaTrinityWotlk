@@ -36,7 +36,6 @@
 #include "Item.h"
 #include "Log.h"
 #include "LootMgr.h"
-#include "MotionMaster.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Opcodes.h"
@@ -2200,8 +2199,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
         Unit* unitCaster = ASSERT_NOTNULL(m_caster->ToUnit());
 
         // Calculate reflected spell result on caster
-        SpellCastResult castResult = m_spellInfo->CheckTarget(target, unitCaster, implicit);
-        if (castResult == SPELL_CAST_OK || castResult == SPELL_FAILED_TARGET_AURASTATE)
+        if (m_spellInfo->CheckTarget(target, unitCaster, implicit) == SPELL_CAST_OK)
             targetInfo.ReflectResult = unitCaster->SpellHitResult(unitCaster, m_spellInfo, false); // can't reflect twice
         else
             targetInfo.ReflectResult = SPELL_MISS_IMMUNE;
@@ -3152,9 +3150,19 @@ SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const
     else
         m_casttime = m_spellInfo->CalcCastTime(this);
 
-    SpellCastResult movementResult = SPELL_CAST_OK;
-    if (m_caster->IsUnit() && m_caster->ToUnit()->isMoving())
-        movementResult = CheckMovement();
+    // don't allow channeled spells / spells with cast time to be cast while moving
+    // exception are only channeled spells that have no casttime and SPELL_ATTR5_CAN_CHANNEL_WHEN_MOVING
+    // (even if they are interrupted on moving, spells with almost immediate effect get to have their effect processed before movement interrupter kicks in)
+    if ((m_spellInfo->IsChanneled() || m_casttime) && m_caster->GetTypeId() == TYPEID_PLAYER && !(m_caster->ToPlayer()->IsCharmed() && m_caster->ToPlayer()->GetCharmerGUID().IsCreature()) && m_caster->ToPlayer()->isMoving() && (m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT))
+    {
+        // 1. Has casttime, 2. Or doesn't have flag to allow movement during channel
+        if (m_casttime || !m_spellInfo->IsMoveAllowedChannel())
+        {
+            SendCastResult(SPELL_FAILED_MOVING);
+            finish(false);
+            return SPELL_FAILED_MOVING;
+        }
+    }
 
     // Creatures focus their target when possible
     if (m_casttime && m_caster->IsCreature() && !m_spellInfo->IsNextMeleeSwingSpell() && !IsAutoRepeat() && !m_caster->ToUnit()->HasUnitFlag(UNIT_FLAG_POSSESSED))
@@ -3165,24 +3173,6 @@ SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const
             m_caster->ToCreature()->SetSpellFocus(this, m_targets.GetObjectTarget());
         else
             m_caster->ToCreature()->SetSpellFocus(this, nullptr);
-    }
-
-    if (movementResult != SPELL_CAST_OK)
-    {
-        if (m_caster->ToUnit()->IsControlledByPlayer() || !CanStopMovementForSpellCasting(m_caster->ToUnit()->GetMotionMaster()->GetCurrentMovementGeneratorType()))
-        {
-            SendCastResult(movementResult);
-            finish(movementResult);
-            return movementResult;
-        }
-        else
-        {
-            // Creatures (not controlled) give priority to spell casting over movement.
-            // We assume that the casting is always valid and the current movement
-            // is stopped immediately (because spells are updated before movement, so next Unit::Update would cancel the spell before stopping movement)
-            // and future attempts are stopped by by Unit::IsMovementPreventedByCasting in movement generators to prevent casting interruption.
-            m_caster->ToUnit()->StopMoving();
-        }
     }
 
     // set timer base at cast time
@@ -3237,7 +3227,7 @@ SpellCastResult Spell::prepare(SpellCastTargets const& targets, AuraEffect const
     return SPELL_CAST_OK;
 }
 
-void Spell::cancel(SpellCastResult result /*= SPELL_FAILED_INTERRUPTED*/, Optional<SpellCastResult> resultOther /*= {}*/)
+void Spell::cancel()
 {
     if (m_spellState == SPELL_STATE_FINISHED)
         return;
@@ -3250,12 +3240,12 @@ void Spell::cancel(SpellCastResult result /*= SPELL_FAILED_INTERRUPTED*/, Option
     {
         case SPELL_STATE_PREPARING:
             CancelGlobalCooldown();
-            SendCastResult(result);
-            SendInterrupted(result, resultOther);
-            break;
+            [[fallthrough]];
         case SPELL_STATE_DELAYED:
-            SendInterrupted(result, resultOther);
+            SendInterrupted(0);
+            SendCastResult(SPELL_FAILED_INTERRUPTED);
             break;
+
         case SPELL_STATE_CASTING:
             for (TargetInfo const& targetInfo : m_UniqueTargetInfo)
                 if (targetInfo.MissCondition == SPELL_MISS_NONE)
@@ -3263,10 +3253,12 @@ void Spell::cancel(SpellCastResult result /*= SPELL_FAILED_INTERRUPTED*/, Option
                         unit->RemoveOwnedAura(m_spellInfo->Id, m_originalCasterGUID, 0, AURA_REMOVE_BY_CANCEL);
 
             SendChannelUpdate(0);
-            SendInterrupted(result, resultOther);
+            SendInterrupted(0);
+            SendCastResult(SPELL_FAILED_INTERRUPTED);
 
             m_appliedMods.clear();
             break;
+
         default:
             break;
     }
@@ -3364,7 +3356,7 @@ void Spell::_cast(bool skipCheck)
         auto cleanupSpell = [this, modOwner](SpellCastResult res, uint32* p1 = nullptr, uint32* p2 = nullptr)
         {
             SendCastResult(res, p1, p2);
-            SendInterrupted(res);
+            SendInterrupted(0);
 
             if (modOwner)
                 modOwner->SetSpellModTakingSpell(this, false);
@@ -3440,7 +3432,7 @@ void Spell::_cast(bool skipCheck)
     // Spell may be finished after target map check
     if (m_spellState == SPELL_STATE_FINISHED)
     {
-        SendInterrupted(SPELL_FAILED_DONT_REPORT);
+        SendInterrupted(0);
 
         if (modOwner)
             modOwner->SetSpellModTakingSpell(this, false);
@@ -3820,9 +3812,21 @@ void Spell::update(uint32 difftime)
         return;
     }
 
-    // check if the unit caster has moved before the spell finished
-    if (m_timer != 0 && m_caster->IsUnit() && m_caster->ToUnit()->isMoving() && CheckMovement() != SPELL_CAST_OK)
-        cancel();
+    // check if the player caster has moved before the spell finished
+    if (m_caster->GetTypeId() == TYPEID_PLAYER && m_timer != 0 &&
+        m_caster->ToPlayer()->isMoving() && m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT &&
+        (!m_spellInfo->HasEffect(SPELL_EFFECT_STUCK) || !m_caster->ToPlayer()->HasUnitMovementFlag(MOVEMENTFLAG_FALLING_FAR)))
+    {
+        // don't cancel for melee, autorepeat, triggered and instant spells
+        if (!m_spellInfo->IsNextMeleeSwingSpell() && !IsAutoRepeat() && !IsTriggered() && !(IsChannelActive() && m_spellInfo->IsMoveAllowedChannel()))
+        {
+            // if charmed by creature, trust the AI not to cheat and allow the cast to proceed
+            // @todo this is a hack, "creature" movesplines don't differentiate turning/moving right now
+            // however, checking what type of movement the spline is for every single spline would be really expensive
+            if (!m_caster->ToPlayer()->GetCharmerGUID().IsCreature())
+                cancel();
+        }
+    }
 
     switch (m_spellState)
     {
@@ -4627,20 +4631,20 @@ void Spell::ExecuteLogEffectResurrect(uint8 effIndex, Unit* target)
     *m_effectExecuteData[effIndex] << target->GetPackGUID();
 }
 
-void Spell::SendInterrupted(SpellCastResult result, Optional<SpellCastResult> resultOther /*= {}*/)
+void Spell::SendInterrupted(uint8 result)
 {
-    WorldPacket data(SMSG_SPELL_FAILURE, 8 + 1 + 4 + 1);
+    WorldPacket data(SMSG_SPELL_FAILURE, (8+4+1));
     data << m_caster->GetPackGUID();
     data << uint8(m_cast_count);
     data << uint32(m_spellInfo->Id);
     data << uint8(result);
     m_caster->SendMessageToSet(&data, true);
 
-    data.Initialize(SMSG_SPELL_FAILED_OTHER, 8 + 1 + 4 + 1);
+    data.Initialize(SMSG_SPELL_FAILED_OTHER, (8+4));
     data << m_caster->GetPackGUID();
     data << uint8(m_cast_count);
     data << uint32(m_spellInfo->Id);
-    data << uint8(resultOther.value_or(result));
+    data << uint8(result);
     m_caster->SendMessageToSet(&data, true);
 }
 
@@ -5880,6 +5884,8 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* param1 /*= nullptr*/, uint
                     InstanceTemplate const* instance = sObjectMgr->GetInstanceTemplate(mapId);
                     if (!instance)
                         return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
+                    if (!target->Satisfy(sObjectMgr->GetAccessRequirement(mapId, difficulty), mapId))
+                        return SPELL_FAILED_BAD_TARGETS;
                 }
                 break;
             }
@@ -6290,7 +6296,7 @@ SpellCastResult Spell::CheckCasterAuras(uint32* param1) const
         }
         else if (!CheckSpellCancelsStun(param1))
             result = SPELL_FAILED_STUNNED;
-        else if (m_spellInfo->Mechanic == MECHANIC_IMMUNE_SHIELD && m_caster->ToUnit() && m_caster->ToUnit()->HasAuraWithMechanic(1 << MECHANIC_BANISH))
+        else if ((m_spellInfo->Mechanic & MECHANIC_IMMUNE_SHIELD) && m_caster->ToUnit() && m_caster->ToUnit()->HasAuraWithMechanic(1 << MECHANIC_BANISH))
             result = SPELL_FAILED_STUNNED;
     }
     else if (unitflag & UNIT_FLAG_SILENCED && m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE && !CheckSpellCancelsSilence(param1))
@@ -6395,24 +6401,6 @@ bool Spell::CheckSpellCancelsConfuse(uint32* param1) const
 int32 Spell::CalculateDamage(SpellEffectInfo const& spellEffectInfo) const
 {
     return m_caster->CalculateSpellDamage(spellEffectInfo, m_spellValue->EffectBasePoints + spellEffectInfo.EffectIndex);
-}
-
-SpellCastResult Spell::CheckMovement() const
-{
-    if (IsTriggered())
-        return SPELL_CAST_OK;
-
-    if (getState() == SPELL_STATE_PREPARING)
-    {
-        if (m_casttime > 0)
-            if (m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT)
-                return SPELL_FAILED_MOVING;
-    }
-    else if (getState() == SPELL_STATE_CASTING)
-        if (!m_spellInfo->IsMoveAllowedChannel())
-            return SPELL_FAILED_MOVING;
-
-    return SPELL_CAST_OK;
 }
 
 bool Spell::CanAutoCast(Unit* target)

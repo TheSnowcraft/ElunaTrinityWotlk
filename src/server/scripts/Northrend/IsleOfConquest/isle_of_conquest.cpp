@@ -215,12 +215,10 @@ class spell_ioc_launch : public SpellScript
 
 enum SeaforiumBombSpells
 {
-    SPELL_SEAFORIUM_BLAST         = 66676,
-    SPELL_SEAFORIUM_BLAST_H       = 67814,
-    SPELL_HUGE_SEAFORIUM_BLAST    = 66672,
-    SPELL_HUGE_SEAFORIUM_BLAST_H  = 67813,
-    SPELL_A_BOMB_INABLE_CREDIT    = 68366,
-    SPELL_A_BOMB_INATION_CREDIT   = 68367
+    SPELL_SEAFORIUM_BLAST       = 66676,
+    SPELL_HUGE_SEAFORIUM_BLAST  = 66672,
+    SPELL_A_BOMB_INABLE_CREDIT  = 68366,
+    SPELL_A_BOMB_INATION_CREDIT = 68367
 };
 
 // 66672 - Huge Seaforium Blast
@@ -241,10 +239,9 @@ class spell_ioc_seaforium_blast_credit : public SpellScript
         if (!caster)
             return;
 
-        uint32 spellId = GetSpellInfo()->Id;
-        if (spellId == SPELL_SEAFORIUM_BLAST || spellId == SPELL_SEAFORIUM_BLAST_H)
+        if (GetSpellInfo()->Id == SPELL_SEAFORIUM_BLAST)
             _creditSpell = SPELL_A_BOMB_INABLE_CREDIT;
-        else if (spellId == SPELL_HUGE_SEAFORIUM_BLAST || spellId == SPELL_HUGE_SEAFORIUM_BLAST_H)
+        else if (GetSpellInfo()->Id == SPELL_HUGE_SEAFORIUM_BLAST)
             _creditSpell = SPELL_A_BOMB_INATION_CREDIT;
 
         if (GetHitGObj() && GetHitGObj()->IsDestructibleBuilding())

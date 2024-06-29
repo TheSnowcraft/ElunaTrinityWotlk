@@ -923,7 +923,7 @@ static std::pair<float, Optional<Rates>> const powerRegenInfo[MAX_POWERS] =
 {
     { 0.f,      RATE_POWER_MANA             }, // POWER_MANA
     { -12.5f,   RATE_POWER_RAGE_LOSS        }, // POWER_RAGE,           -1.25 rage per second
-    { 0.f,      std::nullopt                }, // POWER_FOCUS
+    { 5.f,      RATE_POWER_FOCUS            }, // POWER_FOCUS           +5 focus per second
     { 10.f,     RATE_POWER_ENERGY           }, // POWER_ENERGY,         +10 energy per second
     { 0.f,      std::nullopt                }, // POWER_HAPPINESS
     { 0.f,      std::nullopt                }, // POWER_RUNE
@@ -979,6 +979,7 @@ void Player::UpdatePowerRegen(Powers power)
         }
         case POWER_RAGE:
         case POWER_ENERGY:
+        case POWER_FOCUS:
         case POWER_RUNIC_POWER:
         {
             result_regen                = powerRegenInfo[AsUnderlyingType(power)].first;

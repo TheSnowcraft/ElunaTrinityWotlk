@@ -93,6 +93,7 @@
 #endif
 #include "WhoListStorage.h"
 #include "WorldSession.h"
+#include "Transmogrification.h"
 
 #include <boost/asio/ip/address.hpp>
 
@@ -1556,6 +1557,8 @@ void World::LoadConfigSettings(bool reload)
     // Specifies if IP addresses can be logged to the database
     m_bool_configs[CONFIG_ALLOW_LOGGING_IP_ADDRESSES_IN_DATABASE] = sConfigMgr->GetBoolDefault("AllowLoggingIPAddressesInDatabase", true, true);
 
+    Transmogrification::instance().LoadConfig(reload);
+
     // call ScriptMgr if we're reloading the configuration
     if (reload)
         sScriptMgr->OnConfigLoad(reload);
@@ -2267,6 +2270,8 @@ void World::SetInitialWorldSettings()
             }
         });
     }
+
+    Transmogrification::instance().LoadEnchants();
 
     uint32 startupDuration = GetMSTimeDiffToNow(startupBegin);
 

@@ -1999,7 +1999,7 @@ void Player::RegenerateAll()
     m_foodEmoteTimerCount += m_regenTimer;
 
     Regenerate(POWER_ENERGY);
-    Regenerate(POWER_FOUCS);
+    Regenerate(POWER_FOCUS);
     Regenerate(POWER_MANA);
     Regenerate(POWER_RAGE);
     Regenerate(POWER_RUNIC_POWER);

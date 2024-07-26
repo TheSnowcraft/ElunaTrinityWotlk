@@ -1998,6 +1998,7 @@ void Player::RegenerateAll()
     m_foodEmoteTimerCount += m_regenTimer;
 
     Regenerate(POWER_ENERGY);
+    Regenerate(POWER_FOUCS);
     Regenerate(POWER_MANA);
     Regenerate(POWER_RAGE);
     Regenerate(POWER_RUNIC_POWER);
@@ -2169,6 +2170,9 @@ void Player::ResetAllPowers()
             break;
         case POWER_ENERGY:
             SetFullPower(POWER_ENERGY);
+            break;
+        case POWER_FOCUS:
+            SetFullPower(POWER_FOCUS);
             break;
         case POWER_RUNIC_POWER:
             SetPower(POWER_RUNIC_POWER, 0);
@@ -4513,6 +4517,8 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
         SetPower(POWER_MANA, uint32(GetMaxPower(POWER_MANA)*restore_percent));
         SetPower(POWER_RAGE, 0);
         SetPower(POWER_ENERGY, uint32(GetMaxPower(POWER_ENERGY)*restore_percent));
+        SetPower(POWER_FOCUS, uint32(GetMaxPower(POWER_FOCUS) * restore_percent));
+
     }
 
     // trigger update zone for alive state zone updates
@@ -6428,15 +6434,15 @@ uint32 Player::TeamForRace(uint8 race)
 {
     if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(race))
     {
-        switch (rEntry->BaseLanguage)
+        switch (rEntry->Alliance)
         {
             case 1: return HORDE;
-            case 7: return ALLIANCE;
+            case 0: return ALLIANCE;
         }
-        TC_LOG_ERROR("entities.player", "Race ({}) has wrong teamid ({}) in DBC: wrong DBC files?", uint32(race), rEntry->BaseLanguage);
+        TC_LOG_ERROR("entities.player", "Race (%u) has wrong teamid (%u) in DBC: wrong DBC files?", uint32(race), rEntry->Alliance);
     }
     else
-        TC_LOG_ERROR("entities.player", "Race ({}) not found in DBC: wrong DBC files?", uint32(race));
+        TC_LOG_ERROR("entities.player", "Race (%u) not found in DBC: wrong DBC files?", uint32(race));
 
     return ALLIANCE;
 }
@@ -24007,6 +24013,7 @@ void Player::ResurrectUsingRequestDataImpl()
 
     SetPower(POWER_RAGE, 0);
     SetFullPower(POWER_ENERGY);
+    SetFullPower(POWER_FOCUS);
 
     SpawnCorpseBones();
 }

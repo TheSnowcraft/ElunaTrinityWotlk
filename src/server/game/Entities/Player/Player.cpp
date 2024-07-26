@@ -1999,7 +1999,7 @@ void Player::RegenerateAll()
     m_foodEmoteTimerCount += m_regenTimer;
 
     Regenerate(POWER_ENERGY);
-    Regenerate(POWER_FOCUS);
+    Regenerate(POWER_FOUCS);
     Regenerate(POWER_MANA);
     Regenerate(POWER_RAGE);
     Regenerate(POWER_RUNIC_POWER);
@@ -24692,11 +24692,11 @@ void Player::InitGlyphsForLevel()
         value |= (0x01 | 0x02);
     if (level >= 30)
         value |= 0x08;
-    if (level >= 50)
+    if (level >= 40)
         value |= 0x04;
-    if (level >= 70)
+    if (level >= 50)
         value |= 0x10;
-    if (level >= 80)
+    if (level >= 60)
         value |= 0x20;
 
     SetUInt32Value(PLAYER_GLYPHS_ENABLED, value);

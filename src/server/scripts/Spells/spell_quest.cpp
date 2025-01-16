@@ -124,6 +124,8 @@ enum Quests6124_6129Data
     NPC_CURED_GAZELLE   = 12297,
     NPC_SICKLY_DEER     = 12298,
     NPC_CURED_DEER      = 12299,
+    NPC_PLAGUED_DEER     = 150118,
+    
 };
 
 constexpr Milliseconds Quest6124_6129_DESPAWN_TIME = 30s;
@@ -145,13 +147,25 @@ class spell_q6124_6129_apply_salve : public SpellScript
             if (Creature* creatureTarget = GetHitCreature())
             {
                 uint32 newEntry = 0;
-                switch (caster->GetTeam())
+                switch (caster->GetRace())
                 {
-                    case HORDE:
+                    case RACE_TAUREN:
                         if (creatureTarget->GetEntry() == NPC_SICKLY_GAZELLE)
                             newEntry = NPC_CURED_GAZELLE;
                         break;
-                    case ALLIANCE:
+                    case RACE_TROLL:
+                        if (creatureTarget->GetEntry() == NPC_SICKLY_GAZELLE)
+                            newEntry = NPC_CURED_GAZELLE;
+                        break;
+                    case RACE_UNDEAD_PLAYER:
+                        if (creatureTarget->GetEntry() == NPC_PLAGUED_DEER)
+                            newEntry = NPC_CURED_DEER;
+                        break;
+                    case RACE_NIGHTELF:
+                        if (creatureTarget->GetEntry() == NPC_SICKLY_DEER)
+                            newEntry = NPC_CURED_DEER;
+                        break;
+                    case RACE_WORGEN:
                         if (creatureTarget->GetEntry() == NPC_SICKLY_DEER)
                             newEntry = NPC_CURED_DEER;
                         break;

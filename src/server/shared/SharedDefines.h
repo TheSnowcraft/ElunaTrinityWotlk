@@ -95,7 +95,7 @@ enum Races
     RACE_GOBLIN               = 9,
     RACE_BLOODELF             = 10, // TITLE Blood Elf
     RACE_DRAENEI              = 11, //, TITLE Draenei
-    RACE_FEL_ORC              = 12,
+    RACE_WORGEN               = 12,
     //RACE_NAGA               = 13,
     RACE_BROKEN               = 14,
     //RACE_SKELETON           = 15,
@@ -115,12 +115,12 @@ enum Races
     ((1<<(RACE_HUMAN-1))   |(1<<(RACE_ORC-1))          |(1<<(RACE_DWARF-1))   | \
      (1<<(RACE_NIGHTELF-1))|(1<<(RACE_UNDEAD_PLAYER-1))|(1<<(RACE_TAUREN-1))  | \
      (1<<(RACE_GNOME-1))   |(1<<(RACE_TROLL-1))        |(1<<(RACE_BLOODELF-1))| \
-     (1<<(RACE_DRAENEI-1)) |(1<<(RACE_GOBLIN-1))       |(1<<(RACE_FEL_ORC-1)) | \
+     (1<<(RACE_DRAENEI-1)) |(1<<(RACE_GOBLIN-1))       |(1<<(RACE_WORGEN-1)) | \
      (1<<(RACE_BROKEN-1))   | (1<<(RACE_HIGHELF-1)))
 
 #define RACEMASK_ALLIANCE \
     ((1<<(RACE_HUMAN-1)) | (1<<(RACE_DWARF-1)) 		| (1<<(RACE_NIGHTELF-1)) | \
-     (1<<(RACE_GNOME-1)) | (1<<(RACE_DRAENEI-1))	| (1<<(RACE_FEL_ORC-1))  | \
+     (1<<(RACE_GNOME-1)) | (1<<(RACE_DRAENEI-1))	| (1<<(RACE_WORGEN-1))  | \
      (1<<(RACE_BROKEN-1)) | (1<<(RACE_HIGHELF-1)))
 
 #define RACEMASK_HORDE RACEMASK_ALL_PLAYABLE & ~RACEMASK_ALLIANCE

@@ -148,8 +148,6 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             Unit::AuraEffectList const& ModLangAuras = sender->GetAuraEffectsByType(SPELL_AURA_MOD_LANGUAGE);
             if (!ModLangAuras.empty())
                 lang = ModLangAuras.front()->GetMiscValue();
-            else if (HasPermission(rbac::RBAC_PERM_TWO_SIDE_INTERACTION_CHAT))
-                lang = LANG_UNIVERSAL;
             else
             {
                 switch (type)

@@ -47,11 +47,11 @@ struct Realm;
 // ServerMessages.dbc
 enum ServerMessageType
 {
-    SERVER_MSG_SHUTDOWN_TIME      = 1,
-    SERVER_MSG_RESTART_TIME       = 2,
-    SERVER_MSG_STRING             = 3,
-    SERVER_MSG_SHUTDOWN_CANCELLED = 4,
-    SERVER_MSG_RESTART_CANCELLED  = 5
+    SERVER_MSG_SHUTDOWN_TIME          = 1,
+    SERVER_MSG_RESTART_TIME           = 2,
+    SERVER_MSG_STRING                 = 3,
+    SERVER_MSG_SHUTDOWN_CANCELLED     = 4,
+    SERVER_MSG_RESTART_CANCELLED      = 5
 };
 
 enum ShutdownMask : uint32
@@ -241,6 +241,7 @@ enum WorldIntConfigs : uint32
     CONFIG_START_PLAYER_LEVEL,
     CONFIG_START_DEATH_KNIGHT_PLAYER_LEVEL,
     CONFIG_START_PLAYER_MONEY,
+    CONFIG_START_DEATH_KNIGHT_PLAYER_MONEY,
     CONFIG_MAX_HONOR_POINTS,
     CONFIG_START_HONOR_POINTS,
     CONFIG_MAX_ARENA_POINTS,
@@ -773,8 +774,8 @@ class TC_GAME_API World
         bool IsGuidAlert() { return _guidAlert; }
 
 #ifdef ELUNA
-        Eluna* GetEluna() const { return eluna; }
-        Eluna* eluna;
+        Eluna* GetEluna() const { return eluna.get(); }
+        std::unique_ptr<Eluna> eluna;
 #endif
     protected:
         void _UpdateGameTime();

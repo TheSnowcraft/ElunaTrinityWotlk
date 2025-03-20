@@ -156,12 +156,6 @@ World::World()
 /// World destructor
 World::~World()
 {
-#ifdef ELUNA
-    // Delete world Eluna state
-    delete eluna;
-    eluna = nullptr;
-#endif
-
     ///- Empty the kicked session set
     while (!m_sessions.empty())
     {
@@ -927,6 +921,19 @@ void World::LoadConfigSettings(bool reload)
         TC_LOG_ERROR("server.loading", "StartPlayerMoney ({}) must be in range 0..{}. Set to {}.",
             m_int_configs[CONFIG_START_PLAYER_MONEY], MAX_MONEY_AMOUNT, MAX_MONEY_AMOUNT);
         m_int_configs[CONFIG_START_PLAYER_MONEY] = MAX_MONEY_AMOUNT;
+    }
+
+    m_int_configs[CONFIG_START_DEATH_KNIGHT_PLAYER_MONEY] = sConfigMgr->GetIntDefault("StartDeathKnightPlayerMoney", 2000);
+    if (int32(m_int_configs[CONFIG_START_DEATH_KNIGHT_PLAYER_MONEY]) < 0)
+    {
+        TC_LOG_ERROR("server.loading", "StartDeathKnightPlayerMoney ({}) must be in range 0..{}. Set to {}.", m_int_configs[CONFIG_START_DEATH_KNIGHT_PLAYER_MONEY], MAX_MONEY_AMOUNT, 2000);
+        m_int_configs[CONFIG_START_DEATH_KNIGHT_PLAYER_MONEY] = 2000;
+    }
+    else if (m_int_configs[CONFIG_START_DEATH_KNIGHT_PLAYER_MONEY] > MAX_MONEY_AMOUNT)
+    {
+        TC_LOG_ERROR("server.loading", "StartDeathKnightPlayerMoney ({}) must be in range 0..{}. Set to {}.",
+            m_int_configs[CONFIG_START_DEATH_KNIGHT_PLAYER_MONEY], MAX_MONEY_AMOUNT, MAX_MONEY_AMOUNT);
+        m_int_configs[CONFIG_START_DEATH_KNIGHT_PLAYER_MONEY] = MAX_MONEY_AMOUNT;
     }
 
     m_int_configs[CONFIG_MAX_HONOR_POINTS] = sConfigMgr->GetIntDefault("MaxHonorPoints", 75000);
@@ -2115,7 +2122,7 @@ void World::SetInitialWorldSettings()
     if (sElunaConfig->IsElunaEnabled())
     {
         TC_LOG_INFO("server.loading", "Starting Eluna world state...");
-        eluna = new Eluna(nullptr, sElunaConfig->IsElunaCompatibilityMode());
+        eluna = std::make_unique<Eluna>(nullptr, sElunaConfig->IsElunaCompatibilityMode());
     }
 #endif
 

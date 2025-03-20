@@ -214,7 +214,7 @@ class spell_spawn_blood_pool : public SpellScript
         Unit* caster = GetCaster();
         Position summonPos = caster->GetPosition();
         LiquidData liquidStatus;
-        if (caster->GetMap()->GetLiquidStatus(caster->GetPhaseMask(), caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), MAP_ALL_LIQUIDS, &liquidStatus, caster->GetCollisionHeight()))
+        if (caster->GetMap()->GetLiquidStatus(caster->GetPhaseMask(), caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), {}, &liquidStatus, caster->GetCollisionHeight()))
             summonPos.m_positionZ = liquidStatus.level;
         dest.Relocate(summonPos);
     }
@@ -1524,7 +1524,7 @@ class spell_ethereal_pet_aura : public AuraScript
 
     bool CheckProc(ProcEventInfo& eventInfo)
     {
-        uint32 levelDiff = std::abs(GetTarget()->GetLevel() - eventInfo.GetProcTarget()->GetLevel());
+        uint32 levelDiff = std::abs(eventInfo.GetActor()->GetLevel() - eventInfo.GetActionTarget()->GetLevel());
         return levelDiff <= 9;
     }
 
@@ -1539,7 +1539,7 @@ class spell_ethereal_pet_aura : public AuraScript
             if (minion->IsAIEnabled())
             {
                 minion->AI()->Talk(SAY_STEAL_ESSENCE);
-                minion->CastSpell(eventInfo.GetProcTarget(), SPELL_STEAL_ESSENCE_VISUAL);
+                minion->CastSpell(eventInfo.GetActionTarget(), SPELL_STEAL_ESSENCE_VISUAL);
             }
         }
     }

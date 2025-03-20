@@ -54,6 +54,22 @@ enum STCreatureIds
     NPC_HUKKU                   = 5715,
     NPC_ZUL_LOR                 = 5716,
     NPC_MIJAN                   = 5717,
+
+    //Heroic Boss IDs
+    NPC_HEROIC_AVATAR_OF_HAKKAR        = 78443,
+    NPC_HEROIC_JAMMALAN_THE_PROPHET    = 75710,
+    NPC_HEROIC_DREAMSCYTHE             = 75721,
+    NPC_HEROIC_WEAVER                  = 75720,
+    NPC_HEROIC_MORPHAZ                 = 75719,
+    NPC_HEROIC_HAZZAS                  = 75722,
+    NPC_HEROIC_SHADE_OF_ERANIKUS       = 75709,
+    NPC_HEROIC_ATALALARION             = 78580,
+    NPC_HEROIC_ZOLO                    = 75712,
+    NPC_HEROIC_GASHER                  = 75713,
+    NPC_HEROIC_LORO                    = 75714,
+    NPC_HEROIC_HUKKU                   = 75715,
+    NPC_HEROIC_ZUL_LOR                 = 75716,
+    NPC_HEROIC_MIJAN                   = 75717,
 };
 
 enum STGameObjectIds

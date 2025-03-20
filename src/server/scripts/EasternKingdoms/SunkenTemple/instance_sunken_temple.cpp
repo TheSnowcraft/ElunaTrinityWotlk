@@ -102,23 +102,47 @@ public:
 
         void OnUnitDeath(Unit* unit) override
         {
-            switch (unit->GetEntry())
+            if (instance->IsHeroic())
             {
-                case NPC_AVATAR_OF_HAKKAR:      SetBossState(BOSS_AVATAR_OF_HAKKAR, DONE); break;
-                case NPC_JAMMALAN_THE_PROPHET:  SetBossState(BOSS_JAMMALAN_THE_PROPHET, DONE); break;
-                case NPC_DREAMSCYTHE:           SetBossState(BOSS_DREAMSCYTHE, DONE); break;
-                case NPC_WEAVER:                SetBossState(BOSS_WEAVER, DONE); break;
-                case NPC_MORPHAZ:               SetBossState(BOSS_MORPHAZ, DONE); break;
-                case NPC_HAZZAS:                SetBossState(BOSS_HAZZAS, DONE); break;
-                case NPC_SHADE_OF_ERANIKUS:     SetBossState(BOSS_SHADE_OF_ERANIKUS, DONE); break;
-                case NPC_ATALALARION:           SetBossState(BOSS_ATALALARION, DONE); break;
-                case NPC_ZOLO:
-                case NPC_GASHER:
-                case NPC_LORO:
-                case NPC_HUKKU:
-                case NPC_ZUL_LOR:
-                case NPC_MIJAN:                 SetData(BOSS_EVENT_ELITE_TROLLS, EliteTrollsKilled + 1); break;
-                default:                        break;
+                switch (unit->GetEntry())
+                {
+                    case NPC_HEROIC_AVATAR_OF_HAKKAR:      SetBossState(BOSS_AVATAR_OF_HAKKAR, DONE); break;
+                    case NPC_HEROIC_JAMMALAN_THE_PROPHET:  SetBossState(BOSS_JAMMALAN_THE_PROPHET, DONE); break;
+                    case NPC_HEROIC_DREAMSCYTHE:           SetBossState(BOSS_DREAMSCYTHE, DONE); break;
+                    case NPC_HEROIC_WEAVER:                SetBossState(BOSS_WEAVER, DONE); break;
+                    case NPC_HEROIC_MORPHAZ:               SetBossState(BOSS_MORPHAZ, DONE); break;
+                    case NPC_HEROIC_HAZZAS:                SetBossState(BOSS_HAZZAS, DONE); break;
+                    case NPC_HEROIC_SHADE_OF_ERANIKUS:     SetBossState(BOSS_SHADE_OF_ERANIKUS, DONE); break;
+                    case NPC_HEROIC_ATALALARION:           SetBossState(BOSS_ATALALARION, DONE); break;
+                    case NPC_HEROIC_ZOLO:
+                    case NPC_HEROIC_GASHER:
+                    case NPC_HEROIC_LORO:
+                    case NPC_HEROIC_HUKKU:
+                    case NPC_HEROIC_ZUL_LOR:
+                    case NPC_HEROIC_MIJAN:                 SetData(BOSS_EVENT_ELITE_TROLLS, EliteTrollsKilled + 1); break;
+                    default:                        break;
+                }
+            }
+            else
+            {
+                switch (unit->GetEntry())
+                {
+                    case NPC_AVATAR_OF_HAKKAR:      SetBossState(BOSS_AVATAR_OF_HAKKAR, DONE); break;
+                    case NPC_JAMMALAN_THE_PROPHET:  SetBossState(BOSS_JAMMALAN_THE_PROPHET, DONE); break;
+                    case NPC_DREAMSCYTHE:           SetBossState(BOSS_DREAMSCYTHE, DONE); break;
+                    case NPC_WEAVER:                SetBossState(BOSS_WEAVER, DONE); break;
+                    case NPC_MORPHAZ:               SetBossState(BOSS_MORPHAZ, DONE); break;
+                    case NPC_HAZZAS:                SetBossState(BOSS_HAZZAS, DONE); break;
+                    case NPC_SHADE_OF_ERANIKUS:     SetBossState(BOSS_SHADE_OF_ERANIKUS, DONE); break;
+                    case NPC_ATALALARION:           SetBossState(BOSS_ATALALARION, DONE); break;
+                    case NPC_ZOLO:
+                    case NPC_GASHER:
+                    case NPC_LORO:
+                    case NPC_HUKKU:
+                    case NPC_ZUL_LOR:
+                    case NPC_MIJAN:                 SetData(BOSS_EVENT_ELITE_TROLLS, EliteTrollsKilled + 1); break;
+                    default:                        break;
+                }
             }
         }
 
@@ -126,9 +150,11 @@ public:
         {
             InstanceScript::OnCreatureCreate(creature);
 
+            if (instance->IsHeroic())
+            {
             switch (creature->GetEntry())
             {
-                case NPC_JAMMALAN_THE_PROPHET:
+                case NPC_HEROIC_JAMMALAN_THE_PROPHET:
                     JammalAnTheProphetGUID = creature->GetGUID();
                     if (GetBossState(BOSS_EVENT_ELITE_TROLLS) != DONE)
                     {
@@ -136,7 +162,7 @@ public:
                         creature->CastSpell(creature, SPELL_GREEN_CHANNELING);
                     }
                     break;
-                case NPC_SHADE_OF_ERANIKUS:
+                case NPC_HEROIC_SHADE_OF_ERANIKUS:
                     ShadeOfEranikusGUID = creature->GetGUID();
                     if (GetBossState(BOSS_JAMMALAN_THE_PROPHET) != DONE)
                         creature->SetImmuneToAll(true);
@@ -144,6 +170,29 @@ public:
                 default:
                     break;
             }
+            }
+            else
+            {
+                switch (creature->GetEntry())
+                {
+                    case NPC_JAMMALAN_THE_PROPHET:
+                        JammalAnTheProphetGUID = creature->GetGUID();
+                        if (GetBossState(BOSS_EVENT_ELITE_TROLLS) != DONE)
+                        {
+                            creature->SetImmuneToPC(true);
+                            creature->CastSpell(creature, SPELL_GREEN_CHANNELING);
+                        }
+                        break;
+                    case NPC_SHADE_OF_ERANIKUS:
+                        ShadeOfEranikusGUID = creature->GetGUID();
+                        if (GetBossState(BOSS_JAMMALAN_THE_PROPHET) != DONE)
+                            creature->SetImmuneToAll(true);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
         }
 
          virtual void Update(uint32 /*diff*/) override // correct order goes form 1-6
@@ -221,7 +270,14 @@ public:
             for (uint8 i = 0; i < nStatues; ++i)
                 go->SummonGameObject(GO_ATALAI_LIGHT2, statuePositions[i], QuaternionData(), 0s);
 
-            go->SummonCreature(NPC_ATALALARION, atalalarianPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10min);
+            if (instance->IsHeroic())
+            {
+                go->SummonCreature(NPC_HEROIC_ATALALARION, atalalarianPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10min);
+            }
+            else
+            {
+                go->SummonCreature(NPC_ATALALARION, atalalarianPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10min);
+            }
         }
 
         bool SetBossState(uint32 type, EncounterState state) override

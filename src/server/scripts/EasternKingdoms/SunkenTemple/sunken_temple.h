@@ -96,6 +96,11 @@ enum STShareSpells
     SPELL_GREEN_CHANNELING = 13540
 };
 
+enum STInstanceEvents
+{
+    EVENT_AWAKEN_SOULFLAYER = 8502
+};
+
 template <class AI, class T>
 inline AI* GetSunkenTempleAI(T* obj)
 {

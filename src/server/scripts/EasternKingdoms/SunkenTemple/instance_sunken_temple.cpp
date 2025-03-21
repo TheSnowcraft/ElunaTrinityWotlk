@@ -47,6 +47,7 @@ static constexpr ObjectData gameObjects[] =
 };
 
 static Position const atalalarianPos = { -466.5134f, 95.19822f, -189.6463f, 0.03490658f };
+static Position const hakkarPos = { -466.86f, 272.31f, -90.74f, 3.52f };
 static uint8 const nStatues = 6;
 static Position const statuePositions[nStatues]
 {
@@ -277,6 +278,21 @@ public:
             else
             {
                 go->SummonCreature(NPC_ATALALARION, atalalarianPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10min);
+            }
+        }
+
+        void ProcessEvent(WorldObject* obj, uint32 eventId) override
+        {
+            if (eventId == EVENT_AWAKEN_SOULFLAYER)
+            {
+                if (instance->IsHeroic())
+                {
+                    obj->SummonCreature(NPC_HEROIC_AVATAR_OF_HAKKAR, hakkarPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10min);
+                }
+                else
+                {
+                    obj->SummonCreature(NPC_AVATAR_OF_HAKKAR, hakkarPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10min);
+                }
             }
         }
 

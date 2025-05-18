@@ -1788,7 +1788,13 @@ class spell_quest_taming_the_beast : public AuraScript
             SPELL_TAME_NIGHTSTALKER_1,
             SPELL_TAME_CRAZED_DRAGONHAWK_1,
             SPELL_TAME_ELDER_SPRINGPAW_1,
-            SPELL_TAME_MISTBAT_1
+            SPELL_TAME_MISTBAT_1,
+            SPELL_TAME_STONETUSK_BOAR_1,
+            SPELL_TAME_GREY_FOREST_WOLF_1,
+            SPELL_TAME_YOUNG_FOREST_BEAR_1,
+            SPELL_TAME_DECREPIT_DARK_HOUND_1,
+            SPELL_TAME_GREATER_DUSKBAT_1,
+            SPELL_TAME_TIRISFAL_BEAR_1
         });
     }
 
@@ -1821,6 +1827,12 @@ class spell_quest_taming_the_beast : public AuraScript
             case SPELL_TAME_CRAZED_DRAGONHAWK:     finalSpellId = SPELL_TAME_CRAZED_DRAGONHAWK_1; break;
             case SPELL_TAME_ELDER_SPRINGPAW:       finalSpellId = SPELL_TAME_ELDER_SPRINGPAW_1; break;
             case SPELL_TAME_MISTBAT:               finalSpellId = SPELL_TAME_MISTBAT_1; break;
+            case SPELL_TAME_STONETUSK_BOAR:        finalSpellId = SPELL_TAME_STONETUSK_BOAR_1; break;
+            case SPELL_TAME_GREY_FOREST_WOLF:      finalSpellId = SPELL_TAME_GREY_FOREST_WOLF_1; break;
+            case SPELL_TAME_YOUNG_FOREST_BEAR:     finalSpellId = SPELL_TAME_YOUNG_FOREST_BEAR_1; break;
+            case SPELL_TAME_DECREPIT_DARK_HOUND:   finalSpellId = SPELL_TAME_DECREPIT_DARK_HOUND_1; break;
+            case SPELL_TAME_GREATER_DUSKBAT:       finalSpellId = SPELL_TAME_GREATER_DUSKBAT_1; break;
+            case SPELL_TAME_TIRISFAL_BEAR:         finalSpellId = SPELL_TAME_TIRISFAL_BEAR_1; break;
         }
 
         if (finalSpellId)

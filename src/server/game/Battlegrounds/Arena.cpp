@@ -282,6 +282,25 @@ void Arena::EndBattleground(uint32 winner)
             loserArenaTeam->NotifyStatsChanged();
         }
     }
+    else
+    {
+        for (auto const& i : GetPlayers())
+        {
+            Player* player = _GetPlayer(i.first, i.second.OfflineRemoveTime != 0, "Arena::EndBattleground2");
+            if (!player)
+                continue;
+            uint32 team = i.second.Team;
+            if(team == winner) //winner
+            {
+                player->AddItem(99998, 1);
+                player->ModifyHonorPoints(250);
+            }
+            else //loser
+            {
+                player->ModifyHonorPoints(100);
+            }
+        }
+    }
 
     // end battleground
     Battleground::EndBattleground(winner);

@@ -3815,10 +3815,10 @@ void Spell::EffectApplyGlyph()
     {
         case 0:
         case 1: minLevel = 15; break;
-        case 2: minLevel = 50; break;
+        case 2: minLevel = 40; break;
         case 3: minLevel = 30; break;
-        case 4: minLevel = 70; break;
-        case 5: minLevel = 80; break;
+        case 4: minLevel = 50; break;
+        case 5: minLevel = 60; break;
     }
     if (minLevel && player->GetLevel() < minLevel)
     {

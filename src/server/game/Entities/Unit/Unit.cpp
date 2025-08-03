@@ -12371,6 +12371,52 @@ uint32 Unit::GetModelForForm(ShapeshiftForm form, uint32 spellId) const
                         }
                     }
                 }
+                // Based on Hair color
+                if (GetRace() == RACE_TROLL)
+                {
+                    switch (player->GetHairColorId())
+                    {
+                        case 0: // Purple
+                            return 33665;
+                        case 1: //Red
+                        case 2:
+                            return 33668;
+                        case 3: // Yellow
+                            return 33667;
+                        case 4: // Cyan
+                        case 5:
+                        case 6:
+                        case 7:
+                            return 33666;
+                        case 8: // White
+                        case 9:
+                            return 33669;
+                    }
+                }
+                // Based on Hair color
+                if (GetRace() == RACE_UNDEAD_PLAYER)
+                {
+                    switch (player->GetHairColorId())
+                    {
+                        case 9: // Black
+                            return 50159;
+                        case 2: //Brown
+                        case 3:
+                            return 50160;
+                        case 0: // Green
+                        case 5:
+                        case 7:
+                            return 50162;
+                        case 1: // Purple
+                        case 8:
+                            return 501646;
+                        case 4:// Tan
+                        case 6:
+                            return 501647;
+                        case 10: // White
+                            return 501648;
+                    }
+                }
                 else if (Player::TeamForRace(GetRace()) == ALLIANCE)
                     return 892;
                 else

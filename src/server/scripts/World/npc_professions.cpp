@@ -602,127 +602,127 @@ public:
     }
 };
 
-/*###
-# engineering trinkets
-###*/
+// /*###
+// # engineering trinkets
+// ###*/
 
-enum EngineeringTrinkets
-{
-    NPC_ZAP                     = 14742,
-    NPC_JHORDY                  = 14743,
-    NPC_KABLAM                  = 21493,
-    NPC_SMILES                  = 21494,
+// enum EngineeringTrinkets
+// {
+//     NPC_ZAP                     = 14742,
+//     NPC_JHORDY                  = 14743,
+//     NPC_KABLAM                  = 21493,
+//     NPC_SMILES                  = 21494,
 
-    SPELL_LEARN_TO_EVERLOOK     = 23490,
-    SPELL_LEARN_TO_GADGET       = 23491,
-    SPELL_LEARN_TO_AREA52       = 36956,
-    SPELL_LEARN_TO_TOSHLEY      = 36957,
+//     SPELL_LEARN_TO_EVERLOOK     = 23490,
+//     SPELL_LEARN_TO_GADGET       = 23491,
+//     SPELL_LEARN_TO_AREA52       = 36956,
+//     SPELL_LEARN_TO_TOSHLEY      = 36957,
 
-    SPELL_TO_EVERLOOK           = 23486,
-    SPELL_TO_GADGET             = 23489,
-    SPELL_TO_AREA52             = 36954,
-    SPELL_TO_TOSHLEY            = 36955,
-};
+//     SPELL_TO_EVERLOOK           = 23486,
+//     SPELL_TO_GADGET             = 23489,
+//     SPELL_TO_AREA52             = 36954,
+//     SPELL_TO_TOSHLEY            = 36955,
+// };
 
-class npc_engineering_tele_trinket : public CreatureScript
-{
-public:
-    npc_engineering_tele_trinket() : CreatureScript("npc_engineering_tele_trinket") { }
+// class npc_engineering_tele_trinket : public CreatureScript
+// {
+// public:
+//     npc_engineering_tele_trinket() : CreatureScript("npc_engineering_tele_trinket") { }
 
-    struct npc_engineering_tele_trinketAI : public ScriptedAI
-    {
-        npc_engineering_tele_trinketAI(Creature* creature) : ScriptedAI(creature) { }
+//     struct npc_engineering_tele_trinketAI : public ScriptedAI
+//     {
+//         npc_engineering_tele_trinketAI(Creature* creature) : ScriptedAI(creature) { }
 
-        bool CanLearn(Player* player, uint32 textId, uint32 altTextId, uint32 skillValue, uint32 reqSpellId, uint32 spellId, uint32& npcTextId)
-        {
-            bool res = false;
-            npcTextId = textId;
-            if (player->GetBaseSkillValue(SKILL_ENGINEERING) >= skillValue && player->HasSpell(reqSpellId))
-            {
-                if (!player->HasSpell(spellId))
-                    res = true;
-                else
-                    npcTextId = altTextId;
-            }
-            return res;
-        }
+//         bool CanLearn(Player* player, uint32 textId, uint32 altTextId, uint32 skillValue, uint32 reqSpellId, uint32 spellId, uint32& npcTextId)
+//         {
+//             bool res = false;
+//             npcTextId = textId;
+//             if (player->GetBaseSkillValue(SKILL_ENGINEERING) >= skillValue && player->HasSpell(reqSpellId))
+//             {
+//                 if (!player->HasSpell(spellId))
+//                     res = true;
+//                 else
+//                     npcTextId = altTextId;
+//             }
+//             return res;
+//         }
 
-        bool OnGossipHello(Player* player) override
-        {
-            uint32 npcTextId = 0;
-            uint32 gossipItem;
-            bool canLearn = false;
+//         bool OnGossipHello(Player* player) override
+//         {
+//             uint32 npcTextId = 0;
+//             uint32 gossipItem;
+//             bool canLearn = false;
 
-            if (player->HasSkill(SKILL_ENGINEERING))
-            {
-                switch (me->GetEntry())
-                {
-                    case NPC_ZAP:
-                        canLearn = CanLearn(player, 6092, 0, 260, S_GOBLIN, SPELL_TO_EVERLOOK, npcTextId);
-                        if (canLearn)
-                            gossipItem = GOSSIP_ZAP;
-                        break;
-                    case NPC_JHORDY:
-                        canLearn = CanLearn(player, 7251, 7252, 260, S_GNOMISH, SPELL_TO_GADGET, npcTextId);
-                        if (canLearn)
-                            gossipItem = GOSSIP_JHORDY;
-                        break;
-                    case NPC_KABLAM:
-                        canLearn = CanLearn(player, 10365, 0, 350, S_GOBLIN, SPELL_TO_AREA52, npcTextId);
-                        if (canLearn)
-                            gossipItem = GOSSIP_KABLAM;
-                        break;
-                    case NPC_SMILES:
-                        canLearn = CanLearn(player, 10363, 0, 350, S_GNOMISH, SPELL_TO_TOSHLEY, npcTextId);
-                        if (canLearn)
-                            gossipItem = GOSSIP_SMILES;
-                        break;
-                }
-            }
+//             if (player->HasSkill(SKILL_ENGINEERING))
+//             {
+//                 switch (me->GetEntry())
+//                 {
+//                     case NPC_ZAP:
+//                         canLearn = CanLearn(player, 6092, 0, 260, S_GOBLIN, SPELL_TO_EVERLOOK, npcTextId);
+//                         if (canLearn)
+//                             gossipItem = GOSSIP_ZAP;
+//                         break;
+//                     case NPC_JHORDY:
+//                         canLearn = CanLearn(player, 7251, 7252, 260, S_GNOMISH, SPELL_TO_GADGET, npcTextId);
+//                         if (canLearn)
+//                             gossipItem = GOSSIP_JHORDY;
+//                         break;
+//                     case NPC_KABLAM:
+//                         canLearn = CanLearn(player, 10365, 0, 350, S_GOBLIN, SPELL_TO_AREA52, npcTextId);
+//                         if (canLearn)
+//                             gossipItem = GOSSIP_KABLAM;
+//                         break;
+//                     case NPC_SMILES:
+//                         canLearn = CanLearn(player, 10363, 0, 350, S_GNOMISH, SPELL_TO_TOSHLEY, npcTextId);
+//                         if (canLearn)
+//                             gossipItem = GOSSIP_SMILES;
+//                         break;
+//                 }
+//             }
 
-            if (canLearn)
-                AddGossipItemFor(player, gossipItem, 2, me->GetEntry(), GOSSIP_ACTION_INFO_DEF + 1);
+//             if (canLearn)
+//                 AddGossipItemFor(player, gossipItem, 2, me->GetEntry(), GOSSIP_ACTION_INFO_DEF + 1);
 
-            SendGossipMenuFor(player, npcTextId ? npcTextId : player->GetGossipTextId(me), me->GetGUID());
-            return true;
-        }
+//             SendGossipMenuFor(player, npcTextId ? npcTextId : player->GetGossipTextId(me), me->GetGUID());
+//             return true;
+//         }
 
-        bool OnGossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
-        {
-            uint32 const sender = player->PlayerTalkClass->GetGossipOptionSender(gossipListId);
-            uint32 const action = player->PlayerTalkClass->GetGossipOptionAction(gossipListId);
-            ClearGossipMenuFor(player);
-            if (action == GOSSIP_ACTION_INFO_DEF + 1)
-                CloseGossipMenuFor(player);
+//         bool OnGossipSelect(Player* player, uint32 /*menuId*/, uint32 gossipListId) override
+//         {
+//             uint32 const sender = player->PlayerTalkClass->GetGossipOptionSender(gossipListId);
+//             uint32 const action = player->PlayerTalkClass->GetGossipOptionAction(gossipListId);
+//             ClearGossipMenuFor(player);
+//             if (action == GOSSIP_ACTION_INFO_DEF + 1)
+//                 CloseGossipMenuFor(player);
 
-            if (sender != me->GetEntry())
-                return true;
+//             if (sender != me->GetEntry())
+//                 return true;
 
-            switch (sender)
-            {
-                case NPC_ZAP:
-                    player->CastSpell(player, SPELL_LEARN_TO_EVERLOOK, false);
-                    break;
-                case NPC_JHORDY:
-                    player->CastSpell(player, SPELL_LEARN_TO_GADGET, false);
-                    break;
-                case NPC_KABLAM:
-                    player->CastSpell(player, SPELL_LEARN_TO_AREA52, false);
-                    break;
-                case NPC_SMILES:
-                    player->CastSpell(player, SPELL_LEARN_TO_TOSHLEY, false);
-                    break;
-            }
+//             switch (sender)
+//             {
+//                 case NPC_ZAP:
+//                     player->CastSpell(player, SPELL_LEARN_TO_EVERLOOK, false);
+//                     break;
+//                 case NPC_JHORDY:
+//                     player->CastSpell(player, SPELL_LEARN_TO_GADGET, false);
+//                     break;
+//                 case NPC_KABLAM:
+//                     player->CastSpell(player, SPELL_LEARN_TO_AREA52, false);
+//                     break;
+//                 case NPC_SMILES:
+//                     player->CastSpell(player, SPELL_LEARN_TO_TOSHLEY, false);
+//                     break;
+//             }
 
-            return true;
-        }
-    };
+//             return true;
+//         }
+//     };
 
-    CreatureAI* GetAI(Creature* creature) const override
-    {
-        return new npc_engineering_tele_trinketAI(creature);
-    }
-};
+//     CreatureAI* GetAI(Creature* creature) const override
+//     {
+//         return new npc_engineering_tele_trinketAI(creature);
+//     }
+// };
 
 // Object ID - 177226
 // Book "Soothsaying for dummies"
@@ -1120,7 +1120,7 @@ public:
 void AddSC_npc_professions()
 {
     new npc_prof_blacksmith();
-    new npc_engineering_tele_trinket();
+    // new npc_engineering_tele_trinket();
     new go_soothsaying_for_dummies();
     new npc_prof_leather();
     new npc_prof_tailor();

@@ -3746,32 +3746,32 @@ uint32 Player::ResetTalentsCost() const
     if (sWorld->getBoolConfig(CONFIG_NO_RESET_TALENT_COST))
         return 0;
 
-    // The first time reset costs 1 gold
-    if (GetTalentResetCost() < 1*GOLD)
-        return 1*GOLD;
-    // then 5 gold
-    else if (GetTalentResetCost() < 5*GOLD)
-        return 5*GOLD;
-    // After that it increases in increments of 5 gold
-    else if (GetTalentResetCost() < 10*GOLD)
-        return 10*GOLD;
+    // The first time reset costs 25 silver
+    if (GetTalentResetCost() < 25*SILVER)
+        return 25*SILVER;
+    // then 50 silver
+    else if (GetTalentResetCost() < 50*SILVER)
+        return 50*SILVER;
+    // After that it increases in increments of 25 silver
+    else if (GetTalentResetCost() < 75*SILVER)
+        return 75*SILVER;
     else
     {
         uint64 months = (GameTime::GetGameTime() - GetTalentResetTime())/MONTH;
         if (months > 0)
         {
-            // This cost will be reduced by a rate of 5 gold per month
-            int32 new_cost = int32(GetTalentResetCost() - 5*GOLD*months);
-            // to a minimum of 10 gold.
-            return (new_cost < 10*GOLD ? 10*GOLD : new_cost);
+            // This cost will be reduced by a rate of 5 silver per month
+            int32 new_cost = int32(GetTalentResetCost() - 5*SILVER*months);
+            // to a minimum of 25 silver.
+            return (new_cost < 25*SILVER ? 25*SILVER : new_cost);
         }
         else
         {
-            // After that it increases in increments of 5 gold
-            int32 new_cost = GetTalentResetCost() + 5*GOLD;
-            // until it hits a cap of 50 gold.
-            if (new_cost > 50*GOLD)
-                new_cost = 50*GOLD;
+            // After that it increases in increments of 25 silver
+            int32 new_cost = GetTalentResetCost() + 25*SILVER;
+            // until it hits a cap of 5 gold.
+            if (new_cost > 5*GOLD)
+                new_cost = 5*GOLD;
             return new_cost;
         }
     }

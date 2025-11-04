@@ -56,6 +56,8 @@ enum STCreatureIds
     NPC_MIJAN                   = 5717,
 
     //Heroic Boss IDs
+    NPC_HEROIC_HAKKARI_BLOODKEEPER     = 78438,
+    NPC_HEROIC_ATAL_AI_RITUALIST       = 170003,
     NPC_HEROIC_AVATAR_OF_HAKKAR        = 78443,
     NPC_HEROIC_JAMMALAN_THE_PROPHET    = 75710,
     NPC_HEROIC_DREAMSCYTHE             = 75721,
@@ -93,7 +95,10 @@ enum STEvents
 enum STShareSpells
 {
     SPELL_SUPPRESSION      = 12623,
-    SPELL_GREEN_CHANNELING = 13540
+    SPELL_GREEN_CHANNELING = 13540,
+
+    // Atal'Ai Ritualist
+    SPELL_BLOOD_FUNNEL     = 700100,
 };
 
 enum STInstanceEvents

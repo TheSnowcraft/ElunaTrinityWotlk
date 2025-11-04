@@ -86,6 +86,8 @@ public:
             s5 = false;
             s6 = false;
             EliteTrollsKilled = 0;
+
+            bloodkeeperSummoned = false;
         }
 
         ObjectGuid JammalAnTheProphetGUID;
@@ -285,14 +287,40 @@ public:
         {
             if (eventId == EVENT_AWAKEN_SOULFLAYER)
             {
+                if (bloodkeeperSummoned)
+                    return;
+
                 if (instance->IsHeroic())
                 {
-                    obj->SummonCreature(NPC_HEROIC_AVATAR_OF_HAKKAR, hakkarPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10min);
+                    TempSummon* bloodkeeper = obj->SummonCreature(NPC_HEROIC_HAKKARI_BLOODKEEPER, hakkarPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10min);
+                    if (!bloodkeeper)
+                        return;
+
+                    const float x = hakkarPos.GetPositionX();
+                    const float y = hakkarPos.GetPositionY();
+                    const float z = hakkarPos.GetPositionZ();
+                    const float o = hakkarPos.GetOrientation();
+                    const float dist = 10.0f;
+
+                    Position ritualistPos[4];
+                    ritualistPos[0] = { x + dist * cos(o),     y + dist * sin(o),     z, o };
+                    ritualistPos[1] = { x - dist * cos(o),     y - dist * sin(o),     z, o + float(M_PI) };
+                    ritualistPos[2] = { x + dist * cos(o + float(M_PI/2.f)), y + dist * sin(o + float(M_PI/2.f)), z, o + float(M_PI/2.f) };
+                    ritualistPos[3] = { x + dist * cos(o - float(M_PI/2.f)), y + dist * sin(o - float(M_PI/2.f)), z, o - float(M_PI/2.f) };
+
+                    for (uint8 i = 0; i < 4; ++i)
+                        if (TempSummon* ritualist = obj->SummonCreature(NPC_HEROIC_ATAL_AI_RITUALIST, ritualistPos[i], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10min))
+                        {
+                            ritualist->SetFacingToObject(bloodkeeper, true);
+                            ritualist->CastSpell(bloodkeeper, SPELL_BLOOD_FUNNEL, true);
+                        }
                 }
                 else
                 {
                     obj->SummonCreature(NPC_AVATAR_OF_HAKKAR, hakkarPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10min);
                 }
+
+                bloodkeeperSummoned = true;
             }
         }
 
@@ -359,6 +387,9 @@ public:
         {
             data << EliteTrollsKilled;
         }
+
+    private:
+        bool bloodkeeperSummoned;
     };
 };
 

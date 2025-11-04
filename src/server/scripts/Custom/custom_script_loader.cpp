@@ -17,10 +17,14 @@
 
 // This is where scripts' loading functions should be declared:
 void AddSC_Transmogrification();
+void AddSC_boss_shade_of_eranikus();
+void AddSC_boss_avatar_of_hakkar();
 
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
 void AddCustomScripts()
 {
     AddSC_Transmogrification();
+    AddSC_boss_shade_of_eranikus();
+    AddSC_boss_avatar_of_hakkar();
 }

@@ -734,6 +734,9 @@ class TC_GAME_API PlayerScript : public ScriptObject
         // Called when a player completes a movie
         virtual void OnMovieComplete(Player* player, uint32 movieId);
 
+        // (Custom) Called when a player display IDs are initialized
+        virtual void OnPlayerInitDisplayID(Player* player);
+
 };
 
 class TC_GAME_API AccountScript : public ScriptObject
@@ -1053,6 +1056,7 @@ class TC_GAME_API ScriptMgr
         void OnQuestStatusChange(Player* player, uint32 questId);
         void OnMovieComplete(Player* player, uint32 movieId);
         void OnPlayerRepop(Player* player);
+        void OnPlayerInitDisplayID(Player* player);
 
     public: /* AccountScript */
 

@@ -21728,6 +21728,9 @@ void Player::InitDisplayIds()
         default:
             TC_LOG_ERROR("entities.player", "Player::InitDisplayIds: Player '{}' ({}) has invalid gender {}", GetName(), GetGUID().ToString(), gender);
     }
+
+    // (Custom) Replace DisplayID for desired characters.
+    sScriptMgr->OnPlayerInitDisplayID(this);
 }
 
 inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 count, uint8 bag, uint8 slot, int32 price, ItemTemplate const* pProto, Creature* pVendor, VendorItem const* crItem, bool bStore)

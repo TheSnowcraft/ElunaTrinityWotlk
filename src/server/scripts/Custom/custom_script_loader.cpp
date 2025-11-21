@@ -19,6 +19,7 @@
 void AddSC_Transmogrification();
 void AddSC_boss_shade_of_eranikus();
 void AddSC_boss_avatar_of_hakkar();
+void AddSC_player_model_replace();
 
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
@@ -27,4 +28,5 @@ void AddCustomScripts()
     AddSC_Transmogrification();
     AddSC_boss_shade_of_eranikus();
     AddSC_boss_avatar_of_hakkar();
+    AddSC_player_model_replace();
 }

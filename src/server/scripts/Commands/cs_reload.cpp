@@ -166,6 +166,7 @@ public:
             { "vehicle_template",              rbac::RBAC_PERM_COMMAND_RELOAD_VEHICLE_TEMPLATE,                 true,  &HandleReloadVehicleTemplateCommand,            "" },
             { "vehicle_accessory",             rbac::RBAC_PERM_COMMAND_RELOAD_VEHICLE_ACCESORY,                 true,  &HandleReloadVehicleAccessoryCommand,           "" },
             { "vehicle_template_accessory",    rbac::RBAC_PERM_COMMAND_RELOAD_VEHICLE_TEMPLATE_ACCESSORY,       true,  &HandleReloadVehicleTemplateAccessoryCommand,   "" },
+            { "character_model_replace",       rbac::RBAC_PERM_COMMAND_RELOAD_PLAYER_MODEL,                     true,  &HandleReloadPlayerModelCommand,                "" },
         };
         static std::vector<ChatCommand> commandTable =
         {
@@ -1192,6 +1193,15 @@ public:
         sAccountMgr->LoadRBAC();
         sWorld->ReloadRBAC();
         handler->SendGlobalGMSysMessage("RBAC data reloaded.");
+        return true;
+    }
+
+    static bool HandleReloadPlayerModelCommand(ChatHandler* handler, char const* /*args*/)
+    {
+        TC_LOG_INFO("misc", "Re-Loading `character_model_replace` Table!");
+        //Need to figure out how to make this actually reload, currently fails to compile.
+        //sScriptMgr->OnPlayerInitDisplayID();
+        handler->SendGlobalGMSysMessage("DB table `character_model_replace` reloaded.");
         return true;
     }
 };

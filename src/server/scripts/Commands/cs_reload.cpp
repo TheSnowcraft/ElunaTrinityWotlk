@@ -46,6 +46,7 @@ EndScriptData */
 #include "TicketMgr.h"
 #include "WaypointManager.h"
 #include "World.h"
+#include "../scripts/Custom/PlayerModelSystem.h"
 
 #if TRINITY_COMPILER == TRINITY_COMPILER_GNU
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -1199,8 +1200,7 @@ public:
     static bool HandleReloadPlayerModelCommand(ChatHandler* handler, char const* /*args*/)
     {
         TC_LOG_INFO("misc", "Re-Loading `character_model_replace` Table!");
-        //Need to figure out how to make this actually reload, currently fails to compile.
-        //sScriptMgr->OnPlayerInitDisplayID();
+         PlayerModelSystem::LoadFromDB(true);
         handler->SendGlobalGMSysMessage("DB table `character_model_replace` reloaded.");
         return true;
     }

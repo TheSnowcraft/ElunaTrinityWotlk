@@ -86,6 +86,7 @@
 #include "WardenCheckMgr.h"
 #include "WaypointManager.h"
 #include "WeatherMgr.h"
+#include "../scripts/Custom/PlayerModelSystem.h"
 #ifdef ELUNA
 #include "LuaEngine.h"
 #include "ElunaLoader.h"
@@ -2279,6 +2280,8 @@ void World::SetInitialWorldSettings()
     }
 
     Transmogrification::instance().LoadEnchants();
+
+    PlayerModelSystem::LoadFromDB();
 
     uint32 startupDuration = GetMSTimeDiffToNow(startupBegin);
 

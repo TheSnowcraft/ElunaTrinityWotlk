@@ -523,6 +523,14 @@ public:
                     if (player->GetQuestStatus(12746) == QUEST_STATUS_INCOMPLETE)
                         return true;
                     break;
+                case 49355:                                     // Lord Harford Worgen
+                    if (player->GetQuestStatus(28649) == QUEST_STATUS_INCOMPLETE)
+                        return true;
+                    break;
+                case 49356:                                     // Gally Lumpstain - Goblin
+                    if (player->GetQuestStatus(28650) == QUEST_STATUS_INCOMPLETE)
+                        return true;
+                    break;
             }
 
             return false;
